@@ -1,0 +1,9 @@
+numpy
+scikit-learn
+transformers
+chromadb
+fastapi
+pydantic
+sqlalchemy
+django
+requests
