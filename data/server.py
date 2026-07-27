@@ -6,6 +6,7 @@ from sentence_transformers import SentenceTransformer
 from datasets import load_dataset
 from sqlalchemy.orm import Session
 from typing import Optional
+import meilisearch
 
 # We also import the engine from build_db, you don't have to re-create it here
 from build_db import Artwork,engine
@@ -20,12 +21,27 @@ class Query(BaseModel):
     query: str
     style: Optional[str] = None
 
+# CHROMADB SEARCH
 @app.post("/search")
 def search(q: Query):
     vec = model.encode([q.query]).tolist()
     where={"style": q.style} if q.style else None
-    res = collection.query(query_embeddings=vec, where=where, n_results=5)
+    res = collection.query(query_embeddings=vec, where=where, n_results=10)
     return {"results": res["metadatas"][0]}
+
+# MEILISEARCH 
+client = meilisearch.Client("http://localhost:7700")
+index = client.index("artworks")
+
+@app.post("/keyword_search")
+def keyword_search(q: Query):
+    results = index.search(q.query)
+    return {"results": results["hits"]}
+
+@app.post("/hybrid_search")
+def hybrid_search(q: Query):
+    pass
+
 
 # --------------GET ENDPOINTS---------------
 
