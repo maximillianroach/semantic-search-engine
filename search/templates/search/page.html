@@ -5,10 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ArtSearch</title>
   </head>
+
   <body>
     <h1>ArtSearch</h1>
     <input id="query" placeholder="Describe a painting" />
-    <button onclick="runSearch()">Search</button>
+    <select id="style_dropdown">
+      Choose Style s
+    </select>
+    <button id="search_button">Search</button>
     <div id="results"></div>
   </body>
+
+  <script defer>
+    const searchbar = document.getElementById("query");
+    const searchbutton = document.getElementById("search_button");
+
+    // load styles on page render
+    document.addEventListener("DOMContentLoaded", load_styles);
+
+    async function load_styles() {
+      let res = await fetch("/styles");
+      res = await res.json();
+
+      const dropdown = document.getElementById("style_dropdown");
+
+      // Add a default "all styles" option first that applies no filter
+      const all_styles_option = document.createElement("option");
+      all_styles_option.textContent = "All Styles";
+      all_styles_option.value = "";
+      dropdown.appendChild(all_styles_option);
+
+      for (const style of res) {
+        const new_option = document.createElement("option");
+        new_option.textContent = style.replaceAll("_", " ");
+        new_option.value = style;
+        dropdown.appendChild(new_option);
+      }
+    }
+  </script>
 </html>
