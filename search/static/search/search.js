@@ -4,6 +4,19 @@ document.addEventListener("DOMContentLoaded", () => {
   load_genres();
 });
 
+let current_mode = "semantic";
+
+document.querySelectorAll(".mode-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    current_mode = btn.dataset.mode;
+
+    document
+      .querySelectorAll(".mode-btn")
+      .forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+  });
+});
+
 async function load_styles() {
   let res = await fetch("/styles");
   res = await res.json();
@@ -50,34 +63,33 @@ async function load_genres() {
 
 function render_images(results) {
   const image_region = document.getElementById("results");
-
-  // Clear any past images that were here
   image_region.innerHTML = "";
 
   for (const res of results) {
-    // get features
-    const style = res.style;
-    const artist = res.artist;
-    let path = res.path;
-    const genre = res.genre;
+    const path = res.path.replace("images/", "");
 
-    const slash_index = path.indexOf("/");
-    path = path.slice(slash_index + 1, path.length);
+    const card = document.createElement("div");
+    card.className = "card";
 
-    // create image box, image, and caption elements
-    const image_box = document.createElement("div");
     const image = document.createElement("img");
-    const caption = document.createElement("div");
+    image.src = `/media/${path}`;
 
-    // configure image and point it to the right path
-    image.src = `media/${path}`;
-    image.width = 200;
+    const body = document.createElement("div");
+    body.className = "card-body";
 
-    caption.textContent = `${artist.replaceAll("_", " ")} - ${style.replaceAll("_", " ")}`;
+    const artist = document.createElement("div");
+    artist.className = "card-artist";
+    artist.textContent = res.artist.replaceAll("-", " ");
 
-    image_box.appendChild(image);
-    image_box.append(caption);
-    image_region.appendChild(image_box);
+    const style = document.createElement("div");
+    style.className = "card-style";
+    style.textContent = res.style.replaceAll("_", " ");
+
+    body.appendChild(artist);
+    body.appendChild(style);
+    card.appendChild(image);
+    card.appendChild(body);
+    image_region.appendChild(card);
   }
 }
 
@@ -87,11 +99,19 @@ searchbutton.addEventListener("click", search_click);
 
 async function search_click() {
   const searchbar = document.getElementById("query");
-  const dropdown = document.getElementById("style_dropdown");
+  const style_dropdown = document.getElementById("style_dropdown");
+  const genre_dropdown = document.getElementById("genre_dropdown");
 
   const query = searchbar.value;
-  const style_choice = dropdown.value;
-  const params = new URLSearchParams({ query: query, style: style_choice });
+  const style_choice = style_dropdown.value;
+  const genre_choice = genre_dropdown.value;
+
+  const params = new URLSearchParams({
+    query: query,
+    style: style_choice,
+    genre: genre_choice,
+    mode: current_mode,
+  });
 
   let res = await fetch(`/search?${params}`);
   res = await res.json();

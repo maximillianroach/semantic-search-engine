@@ -7,33 +7,49 @@ from datasets import load_dataset
 from sqlalchemy.orm import Session
 from typing import Optional
 import meilisearch
+import os
 
 # We also import the engine from build_db, you don't have to re-create it here
 from build_db import Artwork,engine
 
+CHROMA_PATH = os.environ.get("CHROMA_PATH", "./chroma_db")
+MEILI_URL = os.environ.get("MEILI_URL", "http://localhost:7700")
 
 app = FastAPI()
 model = SentenceTransformer("clip-ViT-B-32")
 
-collection = chromadb.PersistentClient(path='./chromadb').get_collection("artworks")
+collection = chromadb.PersistentClient(path=CHROMA_PATH).get_collection("artworks")
 
 # client for meilisearch
-client = meilisearch.Client("http://localhost:7700")
+client = meilisearch.Client(MEILI_URL)
 index = client.index("artworks")
     
 
 class Query(BaseModel):
     query: str
     style: Optional[str] = None
+    genre: Optional[str] = None
+    artist: Optional[str] = None
     mode: str = "semantic"
 
 K_CONSTANT = 60
 
+N_RESULTS = 20
+
 # HELPER FUNCTIONS FOR SEARCH
 def semantic_search(q: Query):
     vec = model.encode([q.query]).tolist()
-    where={"style": q.style} if q.style else None
-    res = collection.query(query_embeddings=vec, where=where, n_results=20)
+    where_array = []
+    if q.style: where_array.append({"style": q.style})
+    if q.genre: where_array.append({"genre": q.genre})
+    if q.artist: where_array.append({"artist": q.artist})
+
+    if len(where_array) == 0:
+        res = collection.query(query_embeddings=vec, n_results=N_RESULTS)
+    elif len(where_array) == 1:
+        res = collection.query(query_embeddings=vec, where = where_array[0], n_results=N_RESULTS)
+    elif len(where_array) >= 2:
+        res = collection.query(query_embeddings=vec, where = {"$and": where_array}, n_results=N_RESULTS)
     return res["metadatas"][0]
 
 def keyword_search(q: Query):
@@ -58,16 +74,10 @@ def hybrid_search(semantic, keyword):
 
     # Take the top 10 using SQL 
     with Session(engine) as session:
-        for res in scores:
+        for res in scores[:10]:
             id = res[0]
             top_k_results.append(session.get(Artwork, id))
     return top_k_results
-
-
-
-
-    
-
 
 # mode toggles between standard semantic search and hybrid search with meilisearch
 @app.post("/search")

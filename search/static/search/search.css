@@ -1,0 +1,144 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap");
+
+:root {
+  padding: 0;
+  margin: 0px;
+  border: 0;
+}
+
+h1 {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 700;
+  font-size: 64px;
+  text-align: center;
+  margin-bottom: 24px;
+  margin-top: 0px;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 1100px;
+  margin: 0 auto; /* center the page */
+  padding: 40px 20px;
+  color: #1a1a1a;
+  background-color: #f4f3ef;
+  box-sizing: border-box;
+}
+
+#query,
+#style_dropdown,
+#genre_dropdown,
+#search_button {
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  border-radius: 8px;
+}
+
+#search_button {
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* #results img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover; 
+  border-radius: 8px;
+  display: block;
+  max-width: 200px;
+}
+
+#results > div {
+  font-size: 14px;
+  color: #444;
+} */
+
+#results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden; /* clips the image corners to the card's radius */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px); /* subtle lift on hover — feels interactive */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover; /* uniform tiles despite varied aspect ratios */
+  display: block;
+}
+
+.card-body {
+  padding: 12px 14px;
+}
+
+.card-artist {
+  font-weight: 600;
+  text-transform: capitalize; /* "vincent van gogh" -> "Vincent Van Gogh" */
+  margin-bottom: 2px;
+}
+
+.card-style {
+  font-size: 13px;
+  color: #777;
+}
+
+.search-row {
+  display: flex;
+  gap: 10px;
+  max-width: 640px;
+  margin: 0 auto 16px; /* center, and space below before filters */
+}
+
+#query {
+  flex: 1; /* the input grows to fill the row */
+}
+
+.filter-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center; /* center the two dropdowns */
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.mode-btn {
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.mode-btn.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}

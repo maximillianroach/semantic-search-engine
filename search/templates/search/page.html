@@ -6,19 +6,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ArtSearch</title>
     <script src="{% static 'search/search.js' %}" defer></script>
-    <link href="{% static 'search/search.css'}" />
+    <link rel="stylesheet" href="{% static 'search/search.css' %}" />
   </head>
 
   <body>
     <h1>ArtSearch</h1>
-    <input id="query" placeholder="Describe a painting" />
-    <select id="style_dropdown">
-      Choose Style
-    </select>
-    <select id="genre_dropdown">
-      Choose Genre
-    </select>
-    <button id="search_button">Search</button>
+    <div class="search-row">
+      <input id="query" placeholder="Describe a painting" />
+      <button id="search_button">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-search-icon lucide-search"
+        >
+          <path d="m21 21-4.34-4.34" />
+          <circle cx="11" cy="11" r="8" />
+        </svg>
+      </button>
+    </div>
+    <div class="filter-row">
+      <select id="style_dropdown"></select>
+      <select id="genre_dropdown"></select>
+      <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="semantic">Semantic</button>
+        <button class="mode-btn" data-mode="keyword">Keyword</button>
+        <button class="mode-btn" data-mode="hybrid">Hybrid</button>
+      </div>
+    </div>
+
     <div id="results"></div>
   </body>
 </html>

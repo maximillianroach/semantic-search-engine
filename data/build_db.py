@@ -7,6 +7,9 @@ from pydantic import BaseModel
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 import meilisearch
 
+CHROMA_PATH = os.environ.get("CHROMA_PATH", "./chroma_db")
+MEILI_URL = os.environ.get("MEILI_URL", "http://localhost:7700")
+
  # Defines what type of database language we're using 
 engine = create_engine("sqlite:///artworks.db", echo=True)
 
@@ -36,7 +39,7 @@ def populate():
     for i, r in enumerate(rows):
         p = f"images/{i}.jpg"; r["image"].save(p); paths.append(p)
 
-    client = chromadb.PersistentClient(path='./chromadb')
+    client = chromadb.PersistentClient(path=CHROMA_PATH)
     collection = client.get_or_create_collection("artworks")
 
     collection.upsert(
@@ -72,7 +75,7 @@ def populate():
         session.commit()
 
     # --------------MEILISEARCH---------------
-    client = meilisearch.Client("http://localhost:7700")
+    client = meilisearch.Client(MEILI_URL)
     index = client.index("artworks")
 
     index.add_documents([{"id": i, "artist": feats["artist"].int2str(r["artist"]), 
