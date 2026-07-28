@@ -7,3 +7,4 @@ pydantic
 sqlalchemy
 django
 requests
+meilisearch

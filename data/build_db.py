@@ -46,7 +46,8 @@ def populate():
             "artist": feats["artist"].int2str(r["artist"]),
             "genre": feats["genre"].int2str(r["genre"]),
             "style": feats["style"].int2str(r["style"]),
-            "path": paths[i]
+            "path": paths[i],
+            "id": i
         } for i, r in enumerate(rows)]
     )
 
